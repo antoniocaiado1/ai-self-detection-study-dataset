@@ -121,23 +121,22 @@ The following object is masked from 'package:purrr':
 </div>
 <p>Load the data</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"AI_vs_Human_Data.csv"</span>, <span class="at">col_types =</span> <span class="st">"ffffcfffffffffff"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"AI_vs_Human_Data.csv"</span>, <span class="at">col_types =</span> <span class="st">"ffffcfffffffffff"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 350 × 9
    Source Model   Paraphrased Topic          Answer ChatGPT Bard  Claude zeroGPT
    &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;          &lt;chr&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  
- 1 AI     ChatGPT No          Global Warming "Glob… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 2 AI     ChatGPT No          James Webb Te… "The … AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 3 AI     ChatGPT No          Artificial In… "Arti… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 4 AI     ChatGPT No          Climate Chang… "Clim… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 5 AI     ChatGPT No          The Future of… "The … AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 6 AI     ChatGPT No          Space Explora… "Spac… AI      &lt;NA&gt;  &lt;NA&gt;   Human  
- 7 AI     ChatGPT No          Mental Health… "Ment… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 8 AI     ChatGPT No          Human Rights … "In t… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
- 9 AI     ChatGPT No          Impact of Soc… "The … AI      &lt;NA&gt;  &lt;NA&gt;   AI     
-10 AI     ChatGPT No          Genetic Engin… "Gene… AI      &lt;NA&gt;  &lt;NA&gt;   AI     
+ 1 AI     ChatGPT No          Global Warming "Glob… AI      Human Human  AI     
+ 2 AI     ChatGPT No          James Webb Te… "The … AI      Human Human  AI     
+ 3 AI     ChatGPT No          Artificial In… "Arti… AI      Human Human  AI     
+ 4 AI     ChatGPT No          Climate Chang… "Clim… AI      Human Human  AI     
+ 5 AI     ChatGPT No          The Future of… "The … AI      Human Human  AI     
+ 6 AI     ChatGPT No          Space Explora… "Spac… AI      Human Human  Human  
+ 7 AI     ChatGPT No          Mental Health… "Ment… AI      Human Human  AI     
+ 8 AI     ChatGPT No          Human Rights … "In t… AI      Human Human  AI     
+ 9 AI     ChatGPT No          Impact of Soc… "The … AI      Human Human  AI     
+10 AI     ChatGPT No          Genetic Engin… "Gene… AI      Human Human  AI     
 # ℹ 340 more rows</code></pre>
 </div>
 </div>
@@ -148,14 +147,14 @@ The following object is masked from 'package:purrr':
  AI   :300   ChatGPT:100   No  :150    Global Warming                   :  7  
  Human: 50   Bard   :100   Yes :150    James Webb Telescope             :  7  
              Claude :100   NA's: 50    Human Rights in the Digital Age  :  7  
-             NA's   : 50               Impact of Social Media on Society:  7  
+             None   : 50               Impact of Social Media on Society:  7  
                                        Healthcare Access and Reform     :  7  
                                        Automation and the Future of Work:  7  
                                        (Other)                          :308  
     Answer           ChatGPT       Bard       Claude     zeroGPT   
- Length:350         AI   : 77   AI   : 98   Human:101   AI   :156  
- Class :character   Human: 73   Human: 52   AI   : 49   Human:194  
- Mode  :character   NA's :200   NA's :200   NA's :200              
+ Length:350         AI   :132   Human:150   Human:176   AI   :156  
+ Class :character   Human:118   AI   :100   AI   : 74   Human:194  
+ Mode  :character   NA's :100   NA's :100   NA's :100              
                                                                    
                                                                    
                                                                    
@@ -175,108 +174,302 @@ The following object is masked from 'package:purrr':
 4 AI     Bard    Yes            50
 5 AI     Claude  No             50
 6 AI     Claude  Yes            50
-7 Human  &lt;NA&gt;    &lt;NA&gt;           50</code></pre>
+7 Human  None    &lt;NA&gt;           50</code></pre>
 </div>
 </div>
+<section id="self-detection" class="level2">
+<h2 class="anchored" data-anchor-id="self-detection">Self-Detection</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>eval <span class="ot">&lt;-</span> <span class="cf">function</span>(x, generator, paraphrased, tester) {</span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>eval <span class="ot">&lt;-</span> <span class="cf">function</span>(x, generator, paraphrased, detector) {</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  x <span class="sc">|&gt;</span> <span class="fu">filter</span>(Source <span class="sc">==</span> <span class="st">"Human"</span> <span class="sc">|</span> Model <span class="sc">==</span> generator <span class="sc">&amp;</span> Paraphrased <span class="sc">==</span> paraphrased) <span class="ot">-&gt;</span> x2</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="at">reference =</span> <span class="fu">relevel</span>(x2<span class="sc">$</span>Source, <span class="at">ref=</span> <span class="st">"Human"</span>), </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> <span class="fu">relevel</span>(x2[[tester]], <span class="at">ref =</span> <span class="st">"Human"</span>), <span class="at">positive =</span> <span class="st">"AI"</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Generator =</span> generator, <span class="at">Paraphrased =</span> paraphrased,  <span class="at">Tester =</span> tester,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> <span class="fu">relevel</span>(x2[[detector]], <span class="at">ref =</span> <span class="st">"Human"</span>), <span class="at">positive =</span> <span class="st">"AI"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Generator =</span> generator, <span class="at">Paraphrased =</span> paraphrased,  <span class="at">Detector =</span> detector,</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">rbind</span>(cm<span class="sc">$</span>overall), <span class="fu">rbind</span>(cm<span class="sc">$</span>byClass))</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"ChatGPT"</span>),</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"ChatGPT"</span>),</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"ChatGPT"</span>),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"ChatGPT"</span>),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>),</span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"Bard"</span>),</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>),</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"Bard"</span>),</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Bard"</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>),</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"Bard"</span>),</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>),</span>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"Claude"</span>),</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>),</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"Claude"</span>),</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">tester =</span> <span class="st">"zeroGPT"</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Claude"</span>),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"Claude"</span>),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"Yes"</span>, <span class="at">detector =</span> <span class="st">"zeroGPT"</span>)</span>
 <span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>res <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Detector =</span> <span class="fu">ifelse</span>(Detector <span class="sc">!=</span> <span class="st">"zeroGPT"</span>, <span class="st">"Self-Detection"</span>, <span class="st">"ZeroGPT"</span>)) <span class="ot">-&gt;</span> res </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   Generator Paraphrased  Tester Accuracy Kappa AccuracyLower AccuracyUpper
-1    ChatGPT          No ChatGPT     0.83  0.66     0.7418246     0.8977351
-2    ChatGPT          No zeroGPT     0.66  0.32     0.5584667     0.7517765
-3    ChatGPT         Yes ChatGPT     0.58  0.16     0.4771192     0.6780145
-4    ChatGPT         Yes zeroGPT     0.50  0.00     0.3983211     0.6016789
-5       Bard          No    Bard     0.94  0.88     0.8739701     0.9776651
-6       Bard          No zeroGPT     0.78  0.56     0.6860803     0.8566964
-7       Bard         Yes    Bard     0.92  0.84     0.8484424     0.9648284
-8       Bard         Yes zeroGPT     0.72  0.44     0.6213330     0.8052064
-9     Claude          No  Claude     0.45 -0.10     0.3503202     0.5527198
-10    Claude          No zeroGPT     0.40 -0.20     0.3032948     0.5027908
-11    Claude         Yes  Claude     0.83  0.66     0.7418246     0.8977351
-12    Claude         Yes zeroGPT     0.38 -0.24     0.2847675     0.4825393
-   AccuracyNull AccuracyPValue McnemarPValue Sensitivity Specificity
-1           0.5   6.548999e-12  1.456101e-01        0.90        0.76
-2           0.5   8.949652e-04  8.638317e-01        0.64        0.68
-3           0.5   6.660531e-02  8.711913e-03        0.40        0.76
-4           0.5   5.397946e-01  1.620954e-02        0.32        0.68
-5           0.5   1.002980e-21  6.830914e-01        0.96        0.92
-6           0.5   7.952664e-09  5.500883e-02        0.88        0.68
-7           0.5   1.604282e-19  1.000000e+00        0.92        0.92
-8           0.5   6.289575e-06  5.707504e-01        0.76        0.68
-9           0.5   8.643735e-01  6.906029e-08        0.04        0.86
-10          0.5   9.823999e-01  4.908786e-04        0.12        0.68
-11          0.5   6.548999e-12  6.276258e-01        0.80        0.86
-12          0.5   9.939835e-01  2.305018e-04        0.08        0.68
-   Pos.Pred.Value Neg.Pred.Value Precision Recall         F1 Prevalence
-1       0.7894737      0.8837209 0.7894737   0.90 0.84112150        0.5
-2       0.6666667      0.6538462 0.6666667   0.64 0.65306122        0.5
-3       0.6250000      0.5588235 0.6250000   0.40 0.48780488        0.5
-4       0.5000000      0.5000000 0.5000000   0.32 0.39024390        0.5
-5       0.9230769      0.9583333 0.9230769   0.96 0.94117647        0.5
-6       0.7333333      0.8500000 0.7333333   0.88 0.80000000        0.5
-7       0.9200000      0.9200000 0.9200000   0.92 0.92000000        0.5
-8       0.7037037      0.7391304 0.7037037   0.76 0.73076923        0.5
-9       0.2222222      0.4725275 0.2222222   0.04 0.06779661        0.5
-10      0.2727273      0.4358974 0.2727273   0.12 0.16666667        0.5
-11      0.8510638      0.8113208 0.8510638   0.80 0.82474227        0.5
-12      0.2000000      0.4250000 0.2000000   0.08 0.11428571        0.5
-   Detection.Rate Detection.Prevalence Balanced.Accuracy
-1            0.45                 0.57              0.83
-2            0.32                 0.48              0.66
-3            0.20                 0.32              0.58
-4            0.16                 0.32              0.50
-5            0.48                 0.52              0.94
-6            0.44                 0.60              0.78
-7            0.46                 0.50              0.92
-8            0.38                 0.54              0.72
-9            0.02                 0.09              0.45
-10           0.06                 0.22              0.40
-11           0.40                 0.47              0.83
-12           0.04                 0.20              0.38</code></pre>
+<pre><code>   Generator Paraphrased       Detector Accuracy Kappa AccuracyLower
+1    ChatGPT          No Self-Detection     0.83  0.66     0.7418246
+2    ChatGPT          No        ZeroGPT     0.66  0.32     0.5584667
+3    ChatGPT         Yes Self-Detection     0.58  0.16     0.4771192
+4    ChatGPT         Yes        ZeroGPT     0.50  0.00     0.3983211
+5       Bard          No Self-Detection     0.94  0.88     0.8739701
+6       Bard          No        ZeroGPT     0.78  0.56     0.6860803
+7       Bard         Yes Self-Detection     0.92  0.84     0.8484424
+8       Bard         Yes        ZeroGPT     0.72  0.44     0.6213330
+9     Claude          No Self-Detection     0.45 -0.10     0.3503202
+10    Claude          No        ZeroGPT     0.40 -0.20     0.3032948
+11    Claude         Yes Self-Detection     0.83  0.66     0.7418246
+12    Claude         Yes        ZeroGPT     0.38 -0.24     0.2847675
+   AccuracyUpper AccuracyNull AccuracyPValue McnemarPValue Sensitivity
+1      0.8977351          0.5   6.548999e-12  1.456101e-01        0.90
+2      0.7517765          0.5   8.949652e-04  8.638317e-01        0.64
+3      0.6780145          0.5   6.660531e-02  8.711913e-03        0.40
+4      0.6016789          0.5   5.397946e-01  1.620954e-02        0.32
+5      0.9776651          0.5   1.002980e-21  6.830914e-01        0.96
+6      0.8566964          0.5   7.952664e-09  5.500883e-02        0.88
+7      0.9648284          0.5   1.604282e-19  1.000000e+00        0.92
+8      0.8052064          0.5   6.289575e-06  5.707504e-01        0.76
+9      0.5527198          0.5   8.643735e-01  6.906029e-08        0.04
+10     0.5027908          0.5   9.823999e-01  4.908786e-04        0.12
+11     0.8977351          0.5   6.548999e-12  6.276258e-01        0.80
+12     0.4825393          0.5   9.939835e-01  2.305018e-04        0.08
+   Specificity Pos.Pred.Value Neg.Pred.Value Precision Recall         F1
+1         0.76      0.7894737      0.8837209 0.7894737   0.90 0.84112150
+2         0.68      0.6666667      0.6538462 0.6666667   0.64 0.65306122
+3         0.76      0.6250000      0.5588235 0.6250000   0.40 0.48780488
+4         0.68      0.5000000      0.5000000 0.5000000   0.32 0.39024390
+5         0.92      0.9230769      0.9583333 0.9230769   0.96 0.94117647
+6         0.68      0.7333333      0.8500000 0.7333333   0.88 0.80000000
+7         0.92      0.9200000      0.9200000 0.9200000   0.92 0.92000000
+8         0.68      0.7037037      0.7391304 0.7037037   0.76 0.73076923
+9         0.86      0.2222222      0.4725275 0.2222222   0.04 0.06779661
+10        0.68      0.2727273      0.4358974 0.2727273   0.12 0.16666667
+11        0.86      0.8510638      0.8113208 0.8510638   0.80 0.82474227
+12        0.68      0.2000000      0.4250000 0.2000000   0.08 0.11428571
+   Prevalence Detection.Rate Detection.Prevalence Balanced.Accuracy
+1         0.5           0.45                 0.57              0.83
+2         0.5           0.32                 0.48              0.66
+3         0.5           0.20                 0.32              0.58
+4         0.5           0.16                 0.32              0.50
+5         0.5           0.48                 0.52              0.94
+6         0.5           0.44                 0.60              0.78
+7         0.5           0.46                 0.50              0.92
+8         0.5           0.38                 0.54              0.72
+9         0.5           0.02                 0.09              0.45
+10        0.5           0.06                 0.22              0.40
+11        0.5           0.40                 0.47              0.83
+12        0.5           0.04                 0.20              0.38</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>res <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Tester =</span> <span class="fu">ifelse</span>(Tester <span class="sc">!=</span> <span class="st">"zeroGPT"</span>, <span class="st">"Self-Detection"</span>, <span class="st">"zeroGPT"</span>)) <span class="ot">-&gt;</span> res </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res <span class="sc">|&gt;</span> <span class="fu">filter</span>(Paraphrased <span class="sc">==</span> <span class="st">"No"</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>Generator, <span class="at">y=</span>Accuracy, <span class="at">fill =</span> Tester)) <span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>AccuracyLower, <span class="at">ymax=</span>AccuracyUpper), <span class="at">width =</span> .<span class="dv">2</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="analysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>res <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Accuracy =</span>  <span class="fu">round</span>(Accuracy, <span class="dv">2</span>),</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">Precision =</span>  <span class="fu">round</span>(Precision, <span class="dv">2</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">Detection Rate</span><span class="st">`</span> <span class="ot">=</span>  <span class="fu">round</span>(Recall, <span class="dv">2</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">PValue (Accuracy &gt; .5)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(AccuracyPValue,<span class="dv">2</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>              )  <span class="sc">|&gt;</span> </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Paraphrased) <span class="sc">|&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Generator, Paraphrased, Detector, Accuracy, <span class="st">`</span><span class="at">PValue (Accuracy &gt; .5)</span><span class="st">`</span>, <span class="st">`</span><span class="at">Detection Rate</span><span class="st">`</span>, Precision) <span class="ot">-&gt;</span> res2</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>res2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Generator Paraphrased       Detector Accuracy PValue (Accuracy &gt; .5)
+1    ChatGPT          No Self-Detection     0.83                   0.00
+2    ChatGPT          No        ZeroGPT     0.66                   0.00
+3       Bard          No Self-Detection     0.94                   0.00
+4       Bard          No        ZeroGPT     0.78                   0.00
+5     Claude          No Self-Detection     0.45                   0.86
+6     Claude          No        ZeroGPT     0.40                   0.98
+7    ChatGPT         Yes Self-Detection     0.58                   0.07
+8    ChatGPT         Yes        ZeroGPT     0.50                   0.54
+9       Bard         Yes Self-Detection     0.92                   0.00
+10      Bard         Yes        ZeroGPT     0.72                   0.00
+11    Claude         Yes Self-Detection     0.83                   0.00
+12    Claude         Yes        ZeroGPT     0.38                   0.99
+   Detection Rate Precision
+1            0.90      0.79
+2            0.64      0.67
+3            0.96      0.92
+4            0.88      0.73
+5            0.04      0.22
+6            0.12      0.27
+7            0.40      0.62
+8            0.32      0.50
+9            0.92      0.92
+10           0.76      0.70
+11           0.80      0.85
+12           0.08      0.20</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"xtable"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xtable</span>(res2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>% latex table generated in R 4.3.2 by xtable 1.8-4 package
+% Tue Nov 21 15:01:14 2023
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlllrrrr}
+  \hline
+ &amp; Generator &amp; Paraphrased &amp; Detector &amp; Accuracy &amp; PValue (Accuracy $&gt;$ .5) &amp; Detection Rate &amp; Precision \\ 
+  \hline
+1 &amp; ChatGPT &amp; No &amp; Self-Detection &amp; 0.83 &amp; 0.00 &amp; 0.90 &amp; 0.79 \\ 
+  2 &amp; ChatGPT &amp; No &amp; ZeroGPT &amp; 0.66 &amp; 0.00 &amp; 0.64 &amp; 0.67 \\ 
+  3 &amp; Bard &amp; No &amp; Self-Detection &amp; 0.94 &amp; 0.00 &amp; 0.96 &amp; 0.92 \\ 
+  4 &amp; Bard &amp; No &amp; ZeroGPT &amp; 0.78 &amp; 0.00 &amp; 0.88 &amp; 0.73 \\ 
+  5 &amp; Claude &amp; No &amp; Self-Detection &amp; 0.45 &amp; 0.86 &amp; 0.04 &amp; 0.22 \\ 
+  6 &amp; Claude &amp; No &amp; ZeroGPT &amp; 0.40 &amp; 0.98 &amp; 0.12 &amp; 0.27 \\ 
+  7 &amp; ChatGPT &amp; Yes &amp; Self-Detection &amp; 0.58 &amp; 0.07 &amp; 0.40 &amp; 0.62 \\ 
+  8 &amp; ChatGPT &amp; Yes &amp; ZeroGPT &amp; 0.50 &amp; 0.54 &amp; 0.32 &amp; 0.50 \\ 
+  9 &amp; Bard &amp; Yes &amp; Self-Detection &amp; 0.92 &amp; 0.00 &amp; 0.92 &amp; 0.92 \\ 
+  10 &amp; Bard &amp; Yes &amp; ZeroGPT &amp; 0.72 &amp; 0.00 &amp; 0.76 &amp; 0.70 \\ 
+  11 &amp; Claude &amp; Yes &amp; Self-Detection &amp; 0.83 &amp; 0.00 &amp; 0.80 &amp; 0.85 \\ 
+  12 &amp; Claude &amp; Yes &amp; ZeroGPT &amp; 0.38 &amp; 0.99 &amp; 0.08 &amp; 0.20 \\ 
+   \hline
+\end{tabular}
+\end{table}</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res <span class="sc">|&gt;</span> <span class="fu">filter</span>(Paraphrased <span class="sc">==</span> <span class="st">"Yes"</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>Generator, <span class="at">y=</span>Accuracy, <span class="at">fill =</span> Tester)) <span class="sc">+</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>AccuracyLower, <span class="at">ymax=</span>AccuracyUpper), <span class="at">width =</span> .<span class="dv">2</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res <span class="sc">|&gt;</span> <span class="fu">filter</span>(Paraphrased <span class="sc">==</span> <span class="st">"No"</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>Generator, <span class="at">y=</span>Accuracy, <span class="at">fill =</span> Detector)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>AccuracyLower, <span class="at">ymax=</span>AccuracyUpper), <span class="at">width =</span> .<span class="dv">2</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="analysis_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="analysis_files/figure-html/self_detection_original-1.png" class="img-fluid" width="336"></p>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res <span class="sc">|&gt;</span> <span class="fu">filter</span>(Paraphrased <span class="sc">==</span> <span class="st">"Yes"</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>Generator, <span class="at">y=</span>Accuracy, <span class="at">fill =</span> Detector)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>AccuracyLower, <span class="at">ymax=</span>AccuracyUpper), <span class="at">width =</span> .<span class="dv">2</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="analysis_files/figure-html/self_detection_paraphrased-1.png" class="img-fluid" width="336"></p>
+</div>
+</div>
+</section>
+<section id="detection-by-other-models" class="level2">
+<h2 class="anchored" data-anchor-id="detection-by-other-models">Detection by other Models</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>res_cross <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"ChatGPT"</span>),</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Bard"</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"ChatGPT"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Claude"</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"ChatGPT"</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Bard"</span>),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Bard"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Claude"</span>),</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"ChatGPT"</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Bard"</span>),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval</span>(x, <span class="at">generator =</span> <span class="st">"Claude"</span>, <span class="at">paraphrased =</span> <span class="st">"No"</span>, <span class="at">detector =</span> <span class="st">"Claude"</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#res |&gt; mutate(Detector = ifelse(Detector != "zeroGPT", "Self-Detection", "ZeroGPT")) -&gt; res </span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>res_cross</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Generator Paraphrased Detector Accuracy Kappa AccuracyLower AccuracyUpper
+1   ChatGPT          No  ChatGPT     0.83  0.66     0.7418246     0.8977351
+2   ChatGPT          No     Bard     0.48 -0.04     0.3790055     0.5822102
+3   ChatGPT          No   Claude     0.48 -0.04     0.3790055     0.5822102
+4      Bard          No  ChatGPT     0.63  0.26     0.5276484     0.7244334
+5      Bard          No     Bard     0.94  0.88     0.8739701     0.9776651
+6      Bard          No   Claude     0.63  0.26     0.5276484     0.7244334
+7    Claude          No  ChatGPT     0.68  0.36     0.5792331     0.7697801
+8    Claude          No     Bard     0.46 -0.08     0.3598434     0.5625884
+9    Claude          No   Claude     0.45 -0.10     0.3503202     0.5527198
+  AccuracyNull AccuracyPValue McnemarPValue Sensitivity Specificity
+1          0.5   6.548999e-12  1.456101e-01        0.90        0.76
+2          0.5   6.913503e-01  2.476073e-09        0.04        0.92
+3          0.5   6.913503e-01  2.882424e-07        0.10        0.86
+4          0.5   6.016488e-03  4.851974e-02        0.50        0.76
+5          0.5   1.002980e-21  6.830914e-01        0.96        0.92
+6          0.5   6.016488e-03  2.982932e-04        0.40        0.86
+7          0.5   2.043886e-04  2.159249e-01        0.60        0.76
+8          0.5   8.158992e-01  9.141298e-10        0.00        0.92
+9          0.5   8.643735e-01  6.906029e-08        0.04        0.86
+  Pos.Pred.Value Neg.Pred.Value Precision Recall         F1 Prevalence
+1      0.7894737      0.8837209 0.7894737   0.90 0.84112150        0.5
+2      0.3333333      0.4893617 0.3333333   0.04 0.07142857        0.5
+3      0.4166667      0.4886364 0.4166667   0.10 0.16129032        0.5
+4      0.6756757      0.6031746 0.6756757   0.50 0.57471264        0.5
+5      0.9230769      0.9583333 0.9230769   0.96 0.94117647        0.5
+6      0.7407407      0.5890411 0.7407407   0.40 0.51948052        0.5
+7      0.7142857      0.6551724 0.7142857   0.60 0.65217391        0.5
+8      0.0000000      0.4791667 0.0000000   0.00        NaN        0.5
+9      0.2222222      0.4725275 0.2222222   0.04 0.06779661        0.5
+  Detection.Rate Detection.Prevalence Balanced.Accuracy
+1           0.45                 0.57              0.83
+2           0.02                 0.06              0.48
+3           0.05                 0.12              0.48
+4           0.25                 0.37              0.63
+5           0.48                 0.52              0.94
+6           0.20                 0.27              0.63
+7           0.30                 0.42              0.68
+8           0.00                 0.04              0.46
+9           0.02                 0.09              0.45</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>res_cross <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Accuracy =</span>  <span class="fu">round</span>(Accuracy, <span class="dv">2</span>),</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">Precision =</span>  <span class="fu">round</span>(Precision, <span class="dv">2</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">Detection Rate</span><span class="st">`</span> <span class="ot">=</span>  <span class="fu">round</span>(Recall, <span class="dv">2</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">`</span><span class="at">PValue (Accuracy &gt; .5)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(AccuracyPValue,<span class="dv">2</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>              )  <span class="sc">|&gt;</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Generator, Detector, Accuracy, <span class="st">`</span><span class="at">PValue (Accuracy &gt; .5)</span><span class="st">`</span>, <span class="st">`</span><span class="at">Detection Rate</span><span class="st">`</span>, Precision) <span class="ot">-&gt;</span> res2</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>res2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Generator Detector Accuracy PValue (Accuracy &gt; .5) Detection Rate Precision
+1   ChatGPT  ChatGPT     0.83                   0.00           0.90      0.79
+2   ChatGPT     Bard     0.48                   0.69           0.04      0.33
+3   ChatGPT   Claude     0.48                   0.69           0.10      0.42
+4      Bard  ChatGPT     0.63                   0.01           0.50      0.68
+5      Bard     Bard     0.94                   0.00           0.96      0.92
+6      Bard   Claude     0.63                   0.01           0.40      0.74
+7    Claude  ChatGPT     0.68                   0.00           0.60      0.71
+8    Claude     Bard     0.46                   0.82           0.00      0.00
+9    Claude   Claude     0.45                   0.86           0.04      0.22</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"xtable"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xtable</span>(res2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>% latex table generated in R 4.3.2 by xtable 1.8-4 package
+% Tue Nov 21 15:01:14 2023
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllrrrr}
+  \hline
+ &amp; Generator &amp; Detector &amp; Accuracy &amp; PValue (Accuracy $&gt;$ .5) &amp; Detection Rate &amp; Precision \\ 
+  \hline
+1 &amp; ChatGPT &amp; ChatGPT &amp; 0.83 &amp; 0.00 &amp; 0.90 &amp; 0.79 \\ 
+  2 &amp; ChatGPT &amp; Bard &amp; 0.48 &amp; 0.69 &amp; 0.04 &amp; 0.33 \\ 
+  3 &amp; ChatGPT &amp; Claude &amp; 0.48 &amp; 0.69 &amp; 0.10 &amp; 0.42 \\ 
+  4 &amp; Bard &amp; ChatGPT &amp; 0.63 &amp; 0.01 &amp; 0.50 &amp; 0.68 \\ 
+  5 &amp; Bard &amp; Bard &amp; 0.94 &amp; 0.00 &amp; 0.96 &amp; 0.92 \\ 
+  6 &amp; Bard &amp; Claude &amp; 0.63 &amp; 0.01 &amp; 0.40 &amp; 0.74 \\ 
+  7 &amp; Claude &amp; ChatGPT &amp; 0.68 &amp; 0.00 &amp; 0.60 &amp; 0.71 \\ 
+  8 &amp; Claude &amp; Bard &amp; 0.46 &amp; 0.82 &amp; 0.00 &amp; 0.00 \\ 
+  9 &amp; Claude &amp; Claude &amp; 0.45 &amp; 0.86 &amp; 0.04 &amp; 0.22 \\ 
+   \hline
+\end{tabular}
+\end{table}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res_cross, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>Generator, <span class="at">y=</span>Accuracy, <span class="at">fill =</span> Detector)) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>AccuracyLower, <span class="at">ymax=</span>AccuracyUpper), <span class="at">width =</span> .<span class="dv">2</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(.<span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="analysis_files/figure-html/cross_detection-1.png" class="img-fluid" width="336"></p>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->
