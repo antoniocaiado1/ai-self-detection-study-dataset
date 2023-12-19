@@ -1,6 +1,6 @@
 ---
 title: "Self-detection"
-format: html
+format: md
 editor: visual
 ---
 
@@ -12,11 +12,13 @@ library("caret")
 Load the data
 
 ```{r}
-library("tidyverse")
 x <- read_csv("AI_vs_Human_Data.csv", col_types = "ffffcfffffffffff")
 x
 ```
 
+```{r}
+x <- x |> mutate(word_count = str_count(Answer, '\\w+'), char_count = str_count(Answer), newline_count = str_count(Answer, "\n+"))
+```
 
 ```{r}
 summary(x)
@@ -28,43 +30,126 @@ x |> group_by(Source, Model, Paraphrased) |> count()
 ```
 
 ```{r}
-eval <- function(x, generator, paraphrased, tester) {
+count_summary <- x |> group_by(Source, Model, Paraphrased) |> 
+  summarize(`Avg. Word Count` = mean(word_count), 
+            `Avg. Character Count` = mean(char_count), 
+            `Avg. Newline Count` = mean(newline_count))
+
+count_summary
+
+library("xtable")
+xtable(count_summary)
+```
+
+
+## Self-Detection
+
+```{r}
+eval <- function(x, generator, paraphrased, detector) {
   x |> filter(Source == "Human" | Model == generator & Paraphrased == paraphrased) -> x2
   cm <- confusionMatrix(reference = relevel(x2$Source, ref= "Human"), 
-                        data = relevel(x2[[tester]], ref = "Human"), positive = "AI")
-  data.frame(Generator = generator, Paraphrased = paraphrased,  Tester = tester,
+                        data = relevel(x2[[detector]], ref = "Human"), positive = "AI")
+  data.frame(Generator = generator, Paraphrased = paraphrased,  Detector = detector,
              rbind(cm$overall), rbind(cm$byClass))
 }
 
 res <- rbind(
-  eval(x, generator = "ChatGPT", paraphrased = "No", tester = "ChatGPT"),
-  eval(x, generator = "ChatGPT", paraphrased = "No", tester = "zeroGPT"),
-  eval(x, generator = "ChatGPT", paraphrased = "Yes", tester = "ChatGPT"),
-  eval(x, generator = "ChatGPT", paraphrased = "Yes", tester = "zeroGPT"),
+  eval(x, generator = "ChatGPT", paraphrased = "No", detector = "ChatGPT"),
+  eval(x, generator = "ChatGPT", paraphrased = "No", detector = "zeroGPT"),
+  eval(x, generator = "ChatGPT", paraphrased = "Yes", detector = "ChatGPT"),
+  eval(x, generator = "ChatGPT", paraphrased = "Yes", detector = "zeroGPT"),
   
-  eval(x, generator = "Bard", paraphrased = "No", tester = "Bard"),
-  eval(x, generator = "Bard", paraphrased = "No", tester = "zeroGPT"),
-  eval(x, generator = "Bard", paraphrased = "Yes", tester = "Bard"),
-  eval(x, generator = "Bard", paraphrased = "Yes", tester = "zeroGPT"),
+  eval(x, generator = "Bard", paraphrased = "No", detector = "Bard"),
+  eval(x, generator = "Bard", paraphrased = "No", detector = "zeroGPT"),
+  eval(x, generator = "Bard", paraphrased = "Yes", detector = "Bard"),
+  eval(x, generator = "Bard", paraphrased = "Yes", detector = "zeroGPT"),
   
-  eval(x, generator = "Claude", paraphrased = "No", tester = "Claude"),
-  eval(x, generator = "Claude", paraphrased = "No", tester = "zeroGPT"),
-  eval(x, generator = "Claude", paraphrased = "Yes", tester = "Claude"),
-  eval(x, generator = "Claude", paraphrased = "Yes", tester = "zeroGPT")
+  eval(x, generator = "Claude", paraphrased = "No", detector = "Claude"),
+  eval(x, generator = "Claude", paraphrased = "No", detector = "zeroGPT"),
+  eval(x, generator = "Claude", paraphrased = "Yes", detector = "Claude"),
+  eval(x, generator = "Claude", paraphrased = "Yes", detector = "zeroGPT")
 )
+
+res |> mutate(Detector = ifelse(Detector != "zeroGPT", "Self-Detection", "ZeroGPT")) -> res 
 
 res
 ```
 
 ```{r}
-res |> mutate(Tester = ifelse(Tester != "zeroGPT", "Self-Detection", "zeroGPT")) -> res 
-ggplot(res |> filter(Paraphrased == "No"), mapping = aes(x=Generator, y=Accuracy, fill = Tester)) +
+res |> mutate(Accuracy =  round(Accuracy, 2),
+              Precision =  round(Precision, 2),
+              `Detection Rate` =  round(Recall, 2),
+              `PValue (Accuracy > .5)` = round(AccuracyPValue,2)
+              )  |> 
+  arrange(Paraphrased) |>
+  select(Generator, Paraphrased, Detector, Accuracy, `PValue (Accuracy > .5)`, `Detection Rate`, Precision) -> res2
+
+res2
+
+library("xtable")
+xtable(res2)
+```
+
+
+```{r, self_detection_original, fig.width=3.5,  fig.height=4}
+ggplot(res |> filter(Paraphrased == "No"), mapping = aes(x=Generator, y=Accuracy, fill = Detector)) +
     geom_bar(stat="identity", position = "dodge") +
-    geom_errorbar(aes(ymin=AccuracyLower, ymax=AccuracyUpper), width = .2, position = position_dodge(.9))
+    geom_errorbar(aes(ymin=AccuracyLower, ymax=AccuracyUpper), width = .2, position = position_dodge(.9)) +
+  scale_fill_brewer(palette = "Set1") + theme_bw() +
+  theme(legend.position="bottom")
+```
+
+```{r, self_detection_paraphrased, fig.width=3.5,  fig.height=4}
+ggplot(res |> filter(Paraphrased == "Yes"), mapping = aes(x=Generator, y=Accuracy, fill = Detector)) +
+    geom_bar(stat="identity", position = "dodge") +
+    geom_errorbar(aes(ymin=AccuracyLower, ymax=AccuracyUpper), width = .2, position = position_dodge(.9)) +
+  scale_fill_brewer(palette = "Set1") + theme_bw() +
+  theme(legend.position="bottom")
+```
+
+
+## Detection by other Models
+
+```{r}
+res_cross <- rbind(
+  eval(x, generator = "ChatGPT", paraphrased = "No", detector = "ChatGPT"),
+  eval(x, generator = "ChatGPT", paraphrased = "No", detector = "Bard"),
+  eval(x, generator = "ChatGPT", paraphrased = "No", detector = "Claude"),
+
+  eval(x, generator = "Bard", paraphrased = "No", detector = "ChatGPT"),
+  eval(x, generator = "Bard", paraphrased = "No", detector = "Bard"),
+  eval(x, generator = "Bard", paraphrased = "No", detector = "Claude"),
+  
+  eval(x, generator = "Claude", paraphrased = "No", detector = "ChatGPT"),
+  eval(x, generator = "Claude", paraphrased = "No", detector = "Bard"),
+  eval(x, generator = "Claude", paraphrased = "No", detector = "Claude")
+)
+
+#res |> mutate(Detector = ifelse(Detector != "zeroGPT", "Self-Detection", "ZeroGPT")) -> res 
+
+res_cross
+
 ```
 
 ```{r}
-ggplot(res |> filter(Paraphrased == "Yes"), mapping = aes(x=Generator, y=Accuracy, fill = Tester)) +
+res_cross |> mutate(Accuracy =  round(Accuracy, 2),
+              Precision =  round(Precision, 2),
+              `Detection Rate` =  round(Recall, 2),
+              `PValue (Accuracy > .5)` = round(AccuracyPValue,2)
+              )  |> 
+  select(Generator, Detector, Accuracy, `PValue (Accuracy > .5)`, `Detection Rate`, Precision) -> res2
+
+res2
+
+library("xtable")
+xtable(res2)
+```
+
+
+```{r, cross_detection, fig.width=3.5,  fig.height=4}
+ggplot(res_cross, mapping = aes(x=Generator, y=Accuracy, fill = Detector)) +
     geom_bar(stat="identity", position = "dodge") +
-    geom_errorbar(aes(ymin=AccuracyLower, ymax=AccuracyUpper), width = .2, position = position_dodge(.9))
+    geom_errorbar(aes(ymin=AccuracyLower, ymax=AccuracyUpper), width = .2, position = position_dodge(.9)) +
+  scale_fill_brewer(palette = "Set1") + theme_bw() +
+  theme(legend.position="bottom")
 ```
