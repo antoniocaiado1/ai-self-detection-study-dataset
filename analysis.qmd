@@ -16,6 +16,9 @@ x <- read_csv("AI_vs_Human_Data.csv", col_types = "ffffcfffffffffff")
 x
 ```
 
+```{r}
+x <- x |> mutate(word_count = str_count(Answer, '\\w+'), char_count = str_count(Answer), newline_count = str_count(Answer, "\n+"))
+```
 
 ```{r}
 summary(x)
@@ -25,6 +28,19 @@ summary(x)
 ```{r}
 x |> group_by(Source, Model, Paraphrased) |> count()
 ```
+
+```{r}
+count_summary <- x |> group_by(Source, Model, Paraphrased) |> 
+  summarize(`Avg. Word Count` = mean(word_count), 
+            `Avg. Character Count` = mean(char_count), 
+            `Avg. Newline Count` = mean(newline_count))
+
+count_summary
+
+library("xtable")
+xtable(count_summary)
+```
+
 
 ## Self-Detection
 
