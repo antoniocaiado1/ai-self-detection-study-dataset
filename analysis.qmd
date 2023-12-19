@@ -17,7 +17,10 @@ x
 ```
 
 ```{r}
-x <- x |> mutate(word_count = str_count(Answer, '\\w+'), char_count = str_count(Answer), newline_count = str_count(Answer, "\n+"))
+x <- x |> mutate(word_count = str_count(Answer, '\\w+'), 
+                 char_count = str_count(Answer), 
+                 sentence_count = str_count(Answer, "\\. "),
+                 newline_count = str_count(Answer, "\n+"))
 ```
 
 ```{r}
@@ -31,9 +34,12 @@ x |> group_by(Source, Model, Paraphrased) |> count()
 
 ```{r}
 count_summary <- x |> group_by(Source, Model, Paraphrased) |> 
-  summarize(`Avg. Word Count` = mean(word_count), 
-            `Avg. Character Count` = mean(char_count), 
-            `Avg. Newline Count` = mean(newline_count))
+  summarize(`Number of Essays` = n(),
+            `Word Count` = mean(word_count), 
+      #      `Character Count` = mean(char_count), 
+            `Sentence Count` = mean(sentence_count),
+            `Words/Sentence` = mean(word_count)/mean(sentence_count),
+            `Newline Count` = mean(newline_count))
 
 count_summary
 
