@@ -1,6 +1,6 @@
 ---
 title: "Self-detection"
-format: html
+format: md
 editor: visual
 ---
 
