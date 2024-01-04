@@ -50,7 +50,10 @@ x
     # ℹ 340 more rows
 
 ``` r
-x <- x |> mutate(word_count = str_count(Answer, '\\w+'), char_count = str_count(Answer), newline_count = str_count(Answer, "\n+"))
+x <- x |> mutate(word_count = str_count(Answer, '\\w+'), 
+                 char_count = str_count(Answer), 
+                 sentence_count = str_count(Answer, "\\. "),
+                 newline_count = str_count(Answer, "\n+"))
 ```
 
 ``` r
@@ -73,14 +76,14 @@ summary(x)
                                                                        
                                                                        
                                                                        
-       word_count       char_count   newline_count   
-     Min.   :  36.0   Min.   : 276   Min.   : 0.000  
-     1st Qu.: 182.0   1st Qu.:1357   1st Qu.: 0.000  
-     Median : 206.0   Median :1509   Median : 0.000  
-     Mean   : 239.2   Mean   :1641   Mean   : 3.774  
-     3rd Qu.: 245.8   3rd Qu.:1688   3rd Qu.: 8.000  
-     Max.   :1247.0   Max.   :7399   Max.   :51.000  
-                                                     
+       word_count       char_count   sentence_count   newline_count   
+     Min.   :  36.0   Min.   : 276   Min.   : 0.000   Min.   : 0.000  
+     1st Qu.: 182.0   1st Qu.:1357   1st Qu.: 6.000   1st Qu.: 0.000  
+     Median : 206.0   Median :1509   Median : 8.000   Median : 0.000  
+     Mean   : 239.2   Mean   :1641   Mean   : 8.749   Mean   : 3.774  
+     3rd Qu.: 245.8   3rd Qu.:1688   3rd Qu.:11.000   3rd Qu.: 8.000  
+     Max.   :1247.0   Max.   :7399   Max.   :58.000   Max.   :51.000  
+                                                                      
 
 ``` r
 x |> group_by(Source, Model, Paraphrased) |> count()
@@ -100,9 +103,12 @@ x |> group_by(Source, Model, Paraphrased) |> count()
 
 ``` r
 count_summary <- x |> group_by(Source, Model, Paraphrased) |> 
-  summarize(`Avg. Word Count` = mean(word_count), 
-            `Avg. Character Count` = mean(char_count), 
-            `Avg. Newline Count` = mean(newline_count))
+  summarize(`Number of Essays` = n(),
+            `Word Count` = mean(word_count), 
+      #      `Character Count` = mean(char_count), 
+            `Sentence Count` = mean(sentence_count),
+            `Words/Sentence` = mean(word_count)/mean(sentence_count),
+            `Newline Count` = mean(newline_count))
 ```
 
     `summarise()` has grouped output by 'Source', 'Model'. You can override using
@@ -112,18 +118,18 @@ count_summary <- x |> group_by(Source, Model, Paraphrased) |>
 count_summary
 ```
 
-    # A tibble: 7 × 6
+    # A tibble: 7 × 8
     # Groups:   Source, Model [4]
-      Source Model   Paraphrased `Avg. Word Count` `Avg. Character Count`
-      <fct>  <fct>   <fct>                   <dbl>                  <dbl>
-    1 AI     ChatGPT No                       194.                  1448.
-    2 AI     ChatGPT Yes                      194.                  1480.
-    3 AI     Bard    No                       292.                  1846.
-    4 AI     Bard    Yes                      251.                  1580.
-    5 AI     Claude  No                       206.                  1528.
-    6 AI     Claude  Yes                      187.                  1390.
-    7 Human  None    <NA>                     348.                  2213.
-    # ℹ 1 more variable: `Avg. Newline Count` <dbl>
+      Source Model   Paraphrased `Number of Essays` `Word Count` `Sentence Count`
+      <fct>  <fct>   <fct>                    <int>        <dbl>            <dbl>
+    1 AI     ChatGPT No                          50         194.             7.98
+    2 AI     ChatGPT Yes                         50         194.             8.1 
+    3 AI     Bard    No                          50         292.             6.06
+    4 AI     Bard    Yes                         50         251.             5.24
+    5 AI     Claude  No                          50         206.            11.8 
+    6 AI     Claude  Yes                         50         187.            11.1 
+    7 Human  None    <NA>                        50         348.            11.0 
+    # ℹ 2 more variables: `Words/Sentence` <dbl>, `Newline Count` <dbl>
 
 ``` r
 library("xtable")
@@ -131,20 +137,20 @@ xtable(count_summary)
 ```
 
     % latex table generated in R 4.3.2 by xtable 1.8-4 package
-    % Tue Dec 19 09:49:34 2023
+    % Tue Dec 19 11:05:51 2023
     \begin{table}[ht]
     \centering
-    \begin{tabular}{rlllrrr}
+    \begin{tabular}{rlllrrrrr}
       \hline
-     & Source & Model & Paraphrased & Avg. Word Count & Avg. Character Count & Avg. Newline Count \\ 
+     & Source & Model & Paraphrased & Number of Essays & Word Count & Sentence Count & Words/Sentence & Newline Count \\ 
       \hline
-    1 & AI & ChatGPT & No & 193.90 & 1447.96 & 0.00 \\ 
-      2 & AI & ChatGPT & Yes & 194.36 & 1480.24 & 0.00 \\ 
-      3 & AI & Bard & No & 292.30 & 1845.82 & 10.86 \\ 
-      4 & AI & Bard & Yes & 251.48 & 1579.94 & 9.32 \\ 
-      5 & AI & Claude & No & 206.38 & 1527.80 & 0.00 \\ 
-      6 & AI & Claude & Yes & 187.40 & 1390.30 & 0.00 \\ 
-      7 & Human & None &  & 348.26 & 2213.16 & 6.24 \\ 
+    1 & AI & ChatGPT & No &  50 & 193.90 & 7.98 & 24.30 & 0.00 \\ 
+      2 & AI & ChatGPT & Yes &  50 & 194.36 & 8.10 & 24.00 & 0.00 \\ 
+      3 & AI & Bard & No &  50 & 292.30 & 6.06 & 48.23 & 10.86 \\ 
+      4 & AI & Bard & Yes &  50 & 251.48 & 5.24 & 47.99 & 9.32 \\ 
+      5 & AI & Claude & No &  50 & 206.38 & 11.76 & 17.55 & 0.00 \\ 
+      6 & AI & Claude & Yes &  50 & 187.40 & 11.06 & 16.94 & 0.00 \\ 
+      7 & Human & None &  &  50 & 348.26 & 11.04 & 31.55 & 6.24 \\ 
        \hline
     \end{tabular}
     \end{table}
@@ -280,7 +286,7 @@ xtable(res2)
 ```
 
     % latex table generated in R 4.3.2 by xtable 1.8-4 package
-    % Tue Dec 19 09:49:34 2023
+    % Tue Dec 19 11:05:51 2023
     \begin{table}[ht]
     \centering
     \begin{tabular}{rlllrrrr}
@@ -414,7 +420,7 @@ xtable(res2)
 ```
 
     % latex table generated in R 4.3.2 by xtable 1.8-4 package
-    % Tue Dec 19 09:49:34 2023
+    % Tue Dec 19 11:05:52 2023
     \begin{table}[ht]
     \centering
     \begin{tabular}{rllrrrr}
