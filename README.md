@@ -1,8 +1,37 @@
-## Repository Overview
-This repository contains the dataset and resources for the research paper "Limitations of AI Self-Detection for Identifying Paraphrased Text" by Antonio Junior Alves Caiado and Michael Hahsler. The study focuses on the ability of AI systems like ChatGPT, Bard, and Claude to distinguish their own generated text from human-written content.
+# Limitations of AI Self-Detection for Identifying Paraphrased Text
 
-## Paper Abstract
-The paper addresses authorship attribution challenges in generative AI tools, particularly in academic contexts. It introduces AI self-detection, where AI models identify their own text. The study, involving models like ChatGPT, Bard, and Claude, explores their self-detection capabilities, underlining the need for improved methods to differentiate AI-generated content for academic integrity.
+This GitHub repository presents the findings of a study, focusing on AI models' self-detection abilities in identifying paraphrased texts. The study evaluates models like ChatGPT, Bard, and Claude against a baseline model, zeroGPT.
 
-## Dataset
-The dataset includes essays on 50 topics, created by AI models and human writers. Each AI model produced original essays and their paraphrased versions. This data was crucial for assessing the self-detection abilities of the AI systems.
+## Overview
+
+The research investigates the effectiveness of AI models in recognizing AI-generated versus human-written text, especially when the text is paraphrased. This has critical implications for academic integrity, plagiarism detection, and the use of AI-generated content.
+
+## Dataset Summary
+
+- Total Entries: 350
+- Source Distribution: 
+  - AI-Generated: 300 (ChatGPT: 100, Bard: 100, Claude: 100, None: 50)
+  - Human-Written: 50
+- Paraphrasing Distribution: Paraphrased (150), Not Paraphrased (150), N/A (50)
+- Topics: Global Warming, James Webb Telescope, Human Rights in the Digital Age, Impact of Social Media on Society, Healthcare Access and Reform, Automation and the Future of Work, etc.
+
+## Key Findings
+
+- Detection Accuracy:
+  - ChatGPT identified AI content in 132 out of 350 cases.
+  - Bard was more accurate in detecting human content.
+  - Claude showed balanced detection rates for AI and human content.
+  - ZeroGPT leaned towards detecting AI content.
+- Paraphrasing significantly impacts AI models' detection capabilities.
+
+## Citation
+
+When using this dataset or study, please cite:
+@misc{caiado2023ai,
+      title={AI Content Self-Detection for Transformer-based Large Language Models},
+      author={Antônio Junior Alves Caiado and Michael Hahsler},
+      year={2023},
+      eprint={2312.17289},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
