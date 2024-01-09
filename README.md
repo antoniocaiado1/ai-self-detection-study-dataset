@@ -27,6 +27,8 @@ The research investigates the effectiveness of AI models in recognizing AI-gener
 ## Citation
 
 When using this dataset or study, please cite:
+
+```
 @misc{caiado2023ai,
       title={AI Content Self-Detection for Transformer-based Large Language Models},
       author={Antônio Junior Alves Caiado and Michael Hahsler},
@@ -35,3 +37,4 @@ When using this dataset or study, please cite:
       archivePrefix={arXiv},
       primaryClass={cs.CL}
 }
+```
