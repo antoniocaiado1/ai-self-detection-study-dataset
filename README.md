@@ -1,7 +1,7 @@
 # Limitations of AI Self-Detection for Identifying Paraphrased Text
 
 This GitHub repository contains the data used in the paper 
-[AI Content Self-Detection for Transformer-based Large Language Models.](https://arxiv.org/abs/2312.172890)
+[AI Content Self-Detection for Transformer-based Large Language Models.](https://arxiv.org/abs/2312.17289)
 
 ## Overview
 
